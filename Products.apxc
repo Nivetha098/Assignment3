@@ -1,0 +1,21 @@
+public class Products {
+    public Id RecordId {get;set;}
+   	public List<Product2> accList = new List<Product2>();
+    public Products(){}
+    public List<SelectOption> products {
+    get {
+            accList = [Select Product_Name__c from Product2];
+            products = new List<SelectOption>();
+            for(Product acc : accList)
+            {
+
+                products.add(new SelectOption(acc.Product_Name__c,acc.Product_Name__c));
+            }
+            return products;
+        }set;  
+    }
+    public PageReference generateInvoice(){
+        PageReference requestPage = new pagereference('https://curious-hawk-u2jmsj-dev-ed--c.visualforce.com/apex/Invoice');
+        return requestPage;
+    }
+}
