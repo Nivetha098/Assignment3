@@ -1,0 +1,214 @@
+<apex:page showHeader="false" sidebar="false" renderAs="pdf" standardStylesheets="false" applyHtmlTag="false" standardController="Products">
+    <head>
+            
+        <meta charset="utf-8" />
+        <title>Invoice</title>
+        
+        <style>
+            .invoice-box {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+            font-size: 16px;
+            line-height: 24px;
+            font-family: 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            color: #555;
+            }
+            
+            .invoice-box table {
+            width: 100%;
+            line-height: inherit;
+            text-align: left;
+            }
+            
+            .invoice-box table td {
+            padding: 5px;
+            vertical-align: top;
+            }
+            
+            .invoice-box table tr td:nth-child(2) {
+            text-align: right;
+            }
+            
+            .invoice-box table tr.top table td {
+            padding-bottom: 20px;
+            }
+            
+            .invoice-box table tr.top table td.title {
+            font-size: 45px;
+            line-height: 45px;
+            color: #333;
+            }
+            
+            .invoice-box table tr.information table td {
+            padding-bottom: 40px;
+            }
+            
+            .invoice-box table tr.heading td {
+            background: #eee;
+            border-bottom: 1px solid #ddd;
+            font-weight: bold;
+            }
+            
+            .invoice-box table tr.details td {
+            padding-bottom: 20px;
+            }
+            
+            .invoice-box table tr.item td {
+            border-bottom: 1px solid #eee;
+            }
+            
+            .invoice-box table tr.item.last td {
+            border-bottom: none;
+            }
+            
+            .invoice-box table tr.total td:nth-child(2) {
+            border-top: 2px solid #eee;
+            font-weight: bold;
+            }
+            
+            @media only screen and (max-width: 600px) {
+            .invoice-box table tr.top table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+            }
+            
+            .invoice-box table tr.information table td {
+            width: 100%;
+            display: block;
+            text-align: center;
+            }
+            }
+            
+            /** RTL **/
+            .rtl {
+            direction: rtl;
+            font-family: Tahoma, 'Helvetica Neue', 'Helvetica', Helvetica, Arial, sans-serif;
+            }
+            
+            .rtl table {
+            text-align: right;
+            }
+            
+            .rtl table tr td:nth-child(2) {
+            text-align: left;
+            }
+        </style>
+    </head>
+    
+        
+        <div class="invoice-box">
+            <table cellpadding="0" cellspacing="0">
+                <tr class="top">
+                    <td colspan="2">
+                            <tr>
+                                
+                                   <td class="title">
+									<img src="https://www.sparksuite.com/images/logo.png" style="width: 100%; max-width: 300px" />
+								</td>
+                                
+                                <td>
+                                    <h1>{!products.Invoice_Number__c}</h1><br />
+                                    <span><apex:outputText value="{date, dd/YYYY}">
+                                        <apex:param value="{!products.CloseDate}" />
+                                        </apex:outputText></span>
+                                    <span><apex:outputText value="{date, dd/YYYY}">
+                                        <apex:param value="{!products.DueDate}" />
+                                        </apex:outputText></span>
+                                    
+                                </td>
+                            </tr>
+                    </td>
+                </tr>
+                                        </table>
+
+                <tr class="information">
+                    <td colspan="2">
+                        <table>
+                            <tr>
+                                <td>
+                                    <span class="address__line">{!products.Account.Name}</span>
+                                    <span class="address__line">{!products.Account.BillingStreet}</span>
+                                    <span class="address__line">{!products.Account.BillingCity}, {!products.Account.BillingState} {!products.Account.BillingPostalCode}</span>
+                                </td>
+                                
+                                <td>
+                                    <span class="address__line">{!products.Account.Name}</span>
+                                    <apex:outputPanel rendered="{!ISNULL(products.Account.Name)}">
+                                        <span class="address__line">{!products..Account.Name}</span>
+                                        <span class="address__line">{!products.Account.EmailId}</span>
+                                    </apex:outputPanel>		</td>
+                            </tr>
+                        </table>
+                            </td>
+                            </tr>
+                  
+                <tbody>
+                    <apex:repeat value="{!payments}" var="payment" id="paymentrepeater">
+                        <tr class="heading">
+                            <td>{!payment.npe01__Payment_Method__c}</td>
+                            <td class="text-center">
+                                <apex:outputText value="{0,date, MM/dd/YYYY}">
+                                    <apex:param value="{!payment.npe01__Payment_Date__c}" />
+                                </apex:outputText>
+                            </td>
+                            <td class="text-center">{!payment.npe01__Check_Reference_Number__c}</td>
+                            <td class="text-right">${!payment.npe01__Payment_Amount__c}</td>
+                        </tr>
+                    </apex:repeat>
+                    
+                </tbody>
+
+
+                        
+              <div class="oli__table">
+                            <table>
+                 <col style="width:40%"></col>
+                <col style="width:20%"></col>
+                <col style="width:20%"></col>
+                <col style="width:20%"></col>
+                <thead>
+                    <tr>
+                        <td>
+                            <strong>Item</strong>
+                        </td>
+                        <td class="text-center">
+                            <strong>Price</strong>
+                        </td>
+                       
+                        <td class="text-right">
+                            <strong>Total</strong>
+                        </td>
+                    </tr>
+                </thead>
+
+                <apex:repeat value="{!olis}" var="oli" id="theRepeater" rendered="{!NOT(AND(Products.Type =='Jewellery',Products.StageName =='Pledged'))}">
+                    <tr>
+                        <td class="text-center">{!oli.Item}</td>
+                        <td class="text-center">${!oli.Price}</td>
+                        <td class="text-right">${!oli.DriverCharges}</td>
+                    </tr>
+                    
+                </apex:repeat>
+</table>
+</div>
+                    <div class="oli__footer">
+            <table>
+                <col style="width:85%"></col>
+                <col style="width:15%"></col>
+                <tbody>
+                    <tr>
+                        <td class="thick-line text-right">
+                            <strong>Total</strong>
+                        </td>
+                        <td class="thick-line text-right">${!Opportunity.Amount}</td>
+                    </tr>
+                </tbody>
+    </table>
+</div>
+</div>
+
+</apex:page>
