@@ -1,0 +1,13 @@
+<apex:page controller="Products">
+    <br/><br/><br/><br/><br/><br/><br/>
+  <apex:form ><center>
+      <apex:outputLabel ><h1>Select an Account :</h1></apex:outputLabel>
+      <apex:selectList size="1">
+          <apex:selectOptions value="{!products}"></apex:selectOptions>
+      </apex:selectList>
+      <apex:pageBlock >
+          <apex:commandButton action="{!generateInvoice}" value="Generate Invoice" id="invoiceButton"/>      
+      </apex:pageBlock>
+      </center>
+   </apex:form> 
+</apex:page>
